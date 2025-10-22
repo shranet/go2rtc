@@ -1,4 +1,4 @@
-package main
+package go2rtc
 
 import (
 	"github.com/AlexxIT/go2rtc/internal/alsa"
@@ -40,10 +40,9 @@ import (
 	"github.com/AlexxIT/go2rtc/internal/webtorrent"
 	"github.com/AlexxIT/go2rtc/internal/wyoming"
 	"github.com/AlexxIT/go2rtc/internal/yandex"
-	"github.com/AlexxIT/go2rtc/pkg/shell"
 )
 
-func main() {
+func InitSmartBozor() {
 	app.Version = "1.9.11"
 
 	// 1. Core modules: app, api/ws, streams
@@ -106,6 +105,5 @@ func main() {
 	debug.Init() // debug API
 
 	// 7. Go
-
-	shell.RunUntilSignal()
+	//shell.RunUntilSignal()
 }
