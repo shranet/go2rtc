@@ -117,3 +117,11 @@ func HandleFunc(pattern string, handler http2.HandlerFunc) {
 func NewStream(name string, sources ...string) *streams.Stream {
 	return streams.New(name, sources...)
 }
+
+func UpdateStream(name string, source string) {
+	streams.Patch(name, source)
+}
+
+func RemoveStream(name string) {
+	streams.Delete(name)
+}
