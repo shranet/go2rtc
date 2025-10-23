@@ -29,7 +29,7 @@ func Init() {
 
 	initWS(cfg.Mod.Origin)
 
-	api.HandleFunc("api/ws", apiWS)
+	api.HandleFunc2("api/ws", apiWS)
 }
 
 var log zerolog.Logger

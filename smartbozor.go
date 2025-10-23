@@ -1,6 +1,8 @@
 package go2rtc
 
 import (
+	http2 "net/http"
+
 	"github.com/AlexxIT/go2rtc/internal/alsa"
 	"github.com/AlexxIT/go2rtc/internal/api"
 	"github.com/AlexxIT/go2rtc/internal/api/ws"
@@ -106,4 +108,12 @@ func InitSmartBozor() {
 
 	// 7. Go
 	//shell.RunUntilSignal()
+}
+
+func HandleFunc(pattern string, handler http2.HandlerFunc) {
+	api.HandleFunc2(pattern, handler)
+}
+
+func NewStream(name string, sources ...string) *streams.Stream {
+	return streams.New(name, sources...)
 }

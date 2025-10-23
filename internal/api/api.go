@@ -145,10 +145,15 @@ const (
 
 var Handler http.Handler
 
-// HandleFunc handle pattern with relative path:
+// Bu barcha ENDPOINT larni SKIP qilish uchun qo'shildi
+func HandleFunc(pattern string, handler http.HandlerFunc) {
+
+}
+
+// HandleFunc2 handle pattern with relative path:
 // - "api/streams" => "{basepath}/api/streams"
 // - "/streams"    => "/streams"
-func HandleFunc(pattern string, handler http.HandlerFunc) {
+func HandleFunc2(pattern string, handler http.HandlerFunc) {
 	if len(pattern) == 0 || pattern[0] != '/' {
 		pattern = basePath + "/" + pattern
 	}
