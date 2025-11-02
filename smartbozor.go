@@ -8,7 +8,6 @@ import (
 	"github.com/AlexxIT/go2rtc/internal/api/ws"
 	"github.com/AlexxIT/go2rtc/internal/app"
 	"github.com/AlexxIT/go2rtc/internal/bubble"
-	"github.com/AlexxIT/go2rtc/internal/debug"
 	"github.com/AlexxIT/go2rtc/internal/doorbird"
 	"github.com/AlexxIT/go2rtc/internal/dvrip"
 	"github.com/AlexxIT/go2rtc/internal/echo"
@@ -28,7 +27,6 @@ import (
 	"github.com/AlexxIT/go2rtc/internal/mp4"
 	"github.com/AlexxIT/go2rtc/internal/mpegts"
 	"github.com/AlexxIT/go2rtc/internal/nest"
-	"github.com/AlexxIT/go2rtc/internal/ngrok"
 	"github.com/AlexxIT/go2rtc/internal/onvif"
 	"github.com/AlexxIT/go2rtc/internal/ring"
 	"github.com/AlexxIT/go2rtc/internal/roborock"
@@ -45,6 +43,7 @@ import (
 )
 
 func InitSmartBozor() {
+
 	app.Version = "1.9.11"
 
 	// 1. Core modules: app, api/ws, streams
@@ -74,7 +73,7 @@ func InitSmartBozor() {
 	webtorrent.Init() // webtorrent source, WebTorrent module
 	wyoming.Init()
 
-	// 5. Other sources
+	//5. Other sources
 
 	rtmp.Init()     // rtmp source
 	exec.Init()     // exec source
@@ -102,9 +101,9 @@ func InitSmartBozor() {
 
 	// 6. Helper modules
 
-	ngrok.Init() // ngrok module
-	srtp.Init()  // SRTP server
-	debug.Init() // debug API
+	//ngrok.Init() // ngrok module
+	srtp.Init() // SRTP server
+	//debug.Init() // debug API
 
 	// 7. Go
 	//shell.RunUntilSignal()

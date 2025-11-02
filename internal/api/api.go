@@ -51,7 +51,7 @@ func Init() {
 	HandleFunc("api", apiHandler)
 	HandleFunc("api/config", configHandler)
 	HandleFunc("api/exit", exitHandler)
-	HandleFunc("api/restart", restartHandler)
+	//HandleFunc("api/restart", restartHandler)
 	HandleFunc("api/log", logHandler)
 
 	Handler = http.DefaultServeMux // 4th
@@ -252,22 +252,22 @@ func exitHandler(w http.ResponseWriter, r *http.Request) {
 	os.Exit(code)
 }
 
-func restartHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "", http.StatusBadRequest)
-		return
-	}
-
-	path, err := os.Executable()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.Debug().Msgf("[api] restart %s", path)
-
-	go syscall.Exec(path, os.Args, os.Environ())
-}
+//func restartHandler(w http.ResponseWriter, r *http.Request) {
+//	if r.Method != "POST" {
+//		http.Error(w, "", http.StatusBadRequest)
+//		return
+//	}
+//
+//	path, err := os.Executable()
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	log.Debug().Msgf("[api] restart %s", path)
+//
+//	go syscall.Exec(path, os.Args, os.Environ())
+//}
 
 func logHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
