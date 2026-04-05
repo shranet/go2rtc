@@ -154,8 +154,12 @@ func HandleFunc(pattern string, handler http.HandlerFunc) {
 // - "api/streams" => "{basepath}/api/streams"
 // - "/streams"    => "/streams"
 func HandleFunc2(pattern string, handler http.HandlerFunc) {
-	if len(pattern) == 0 || pattern[0] != '/' {
-		pattern = basePath + "/" + pattern
+
+	//METHOD[space]endpoint
+	if !strings.Contains(pattern, " ") {
+		if len(pattern) == 0 || pattern[0] != '/' {
+			pattern = basePath + "/" + pattern
+		}
 	}
 	log.Trace().Str("path", pattern).Msg("[api] register path")
 	http.HandleFunc(pattern, handler)
