@@ -150,6 +150,10 @@ func HandleFunc(pattern string, handler http.HandlerFunc) {
 
 }
 
+func Handle(pattern string, handler http.Handler) {
+	http.Handle(pattern, handler)
+}
+
 // HandleFunc2 handle pattern with relative path:
 // - "api/streams" => "{basepath}/api/streams"
 // - "/streams"    => "/streams"
