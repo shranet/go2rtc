@@ -107,6 +107,10 @@ func InitSmartBozor() {
 	//shell.RunUntilSignal()
 }
 
+func Handle(pattern string, handler http2.Handler) {
+	api.Handle(pattern, handler)
+}
+
 func HandleFunc(pattern string, handler http2.HandlerFunc) {
 	api.HandleFunc2(pattern, handler)
 }
