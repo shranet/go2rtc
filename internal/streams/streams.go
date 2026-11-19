@@ -52,10 +52,27 @@ func Init() {
 
 var sanitize = regexp.MustCompile(`\s`)
 
+// allowedSchemes — bo'sh bo'lmasa, oqim manbasi faqat shu sxemalardan biri bo'ladi (smartbozor: rtsp, rtsps).
+var allowedSchemes map[string]bool
+
+// AllowSchemes — manba sxemalarini cheklaydi (InitSmartBozor).
+func AllowSchemes(schemes ...string) {
+	allowedSchemes = map[string]bool{}
+	for _, s := range schemes {
+		allowedSchemes[s] = true
+	}
+}
+
 // Validate - not allow creating dynamic streams with spaces in the source
 func Validate(source string) error {
 	if sanitize.MatchString(source) {
 		return errors.New("streams: invalid dynamic source")
+	}
+	if allowedSchemes != nil {
+		u, err := url.Parse(source)
+		if err != nil || !allowedSchemes[u.Scheme] {
+			return errors.New("streams: source scheme not allowed")
+		}
 	}
 	return nil
 }
@@ -131,6 +148,11 @@ func GetOrPatch(query url.Values) *Stream {
 	// check if src is stream name
 	if stream := Get(source); stream != nil {
 		return stream
+	}
+
+	// smartbozor: so'rov (/api/ws?src=...) orqali yangi oqim yaratilmaydi — faqat AGENT yaratgan oqimlar
+	if allowedSchemes != nil {
+		return nil
 	}
 
 	// check if name param provided

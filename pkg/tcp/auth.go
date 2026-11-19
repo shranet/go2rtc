@@ -35,14 +35,28 @@ func NewAuth(user *url.Userinfo) *Auth {
 	return a
 }
 
+// DisableBasic — Basic auth (parol ochiq matnda) taklif qilinsa rad etiladi; faqat Digest (smartbozor: soxta
+// kamera/SADP orqali parolni o'g'irlashdan himoya).
+var DisableBasic bool
+
 func (a *Auth) Read(res *Response) bool {
 	auth := res.Header.Get("WWW-Authenticate")
+	// bir nechta sarlavha bo'lsa Digest ustun (Basic dan oldin)
+	for _, v := range res.Header.Values("WWW-Authenticate") {
+		if strings.HasPrefix(v, "Digest") {
+			auth = v
+			break
+		}
+	}
 	if len(auth) < 6 {
 		return false
 	}
 
 	switch auth[:6] {
 	case "Basic ":
+		if DisableBasic {
+			return false
+		}
 		a.header = "Basic " + B64(a.user, a.pass)
 		a.Method = AuthBasic
 		return true

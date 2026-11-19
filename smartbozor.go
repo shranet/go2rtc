@@ -6,105 +6,32 @@ import (
 	"github.com/AlexxIT/go2rtc/internal/api"
 	"github.com/AlexxIT/go2rtc/internal/api/ws"
 	"github.com/AlexxIT/go2rtc/internal/app"
-	"github.com/AlexxIT/go2rtc/internal/bubble"
-	"github.com/AlexxIT/go2rtc/internal/doorbird"
-	"github.com/AlexxIT/go2rtc/internal/dvrip"
-	"github.com/AlexxIT/go2rtc/internal/echo"
-	"github.com/AlexxIT/go2rtc/internal/eseecloud"
-	"github.com/AlexxIT/go2rtc/internal/exec"
-	"github.com/AlexxIT/go2rtc/internal/expr"
-	"github.com/AlexxIT/go2rtc/internal/ffmpeg"
-	"github.com/AlexxIT/go2rtc/internal/flussonic"
-	"github.com/AlexxIT/go2rtc/internal/gopro"
-	"github.com/AlexxIT/go2rtc/internal/hass"
-	"github.com/AlexxIT/go2rtc/internal/hls"
-	"github.com/AlexxIT/go2rtc/internal/homekit"
-	"github.com/AlexxIT/go2rtc/internal/http"
-	"github.com/AlexxIT/go2rtc/internal/isapi"
-	"github.com/AlexxIT/go2rtc/internal/ivideon"
 	"github.com/AlexxIT/go2rtc/internal/mjpeg"
 	"github.com/AlexxIT/go2rtc/internal/mp4"
-	"github.com/AlexxIT/go2rtc/internal/mpegts"
-	"github.com/AlexxIT/go2rtc/internal/nest"
-	"github.com/AlexxIT/go2rtc/internal/onvif"
-	"github.com/AlexxIT/go2rtc/internal/ring"
-	"github.com/AlexxIT/go2rtc/internal/roborock"
-	"github.com/AlexxIT/go2rtc/internal/rtmp"
 	"github.com/AlexxIT/go2rtc/internal/rtsp"
-	"github.com/AlexxIT/go2rtc/internal/srtp"
 	"github.com/AlexxIT/go2rtc/internal/streams"
-	"github.com/AlexxIT/go2rtc/internal/tapo"
-	"github.com/AlexxIT/go2rtc/internal/webrtc"
-	"github.com/AlexxIT/go2rtc/internal/webtorrent"
-	"github.com/AlexxIT/go2rtc/internal/wyoming"
-	"github.com/AlexxIT/go2rtc/internal/yandex"
+	"github.com/AlexxIT/go2rtc/pkg/tcp"
 )
 
+// InitSmartBozor — AGENT uchun minimal go2rtc (2026-11-19, xavfsizlik auditi): faqat kameradan RTSP olish va
+// /api/ws orqali MSE/MJPEG ko'rsatish. exec, ffmpeg, echo, expr, webrtc, hls va boshqa manbalar/serverlar
+// ulanmaydi: ular buyruq bajarish yoki ichki tarmoqqa so'rov yuborish yo'lini ochadi. Oqimlarni faqat AGENT
+// yaratadi (streams.New/Patch, rtsp:// manba); /api/ws faqat mavjud oqimni ko'rsatadi (streams.GetOrPatch).
 func InitSmartBozor() {
-
 	app.Version = "1.9.11"
 
-	// 1. Core modules: app, api/ws, streams
+	app.Init() // config va loglar
 
-	app.Init() // init config and logs
+	api.Init() // API (HandleFunc no-op; AGENT o'z handlerlarini Handle bilan qo'yadi)
+	ws.Init()  // /api/ws
 
-	api.Init() // init API before all others
-	ws.Init()  // init WS API endpoint
+	streams.Init()
+	streams.AllowSchemes("rtsp", "rtsps")
+	tcp.DisableBasic = true // kameralarga parol faqat Digest bilan
 
-	streams.Init() // streams module
-
-	// 2. Main sources and servers
-
-	rtsp.Init()   // rtsp source, RTSP server
-	webrtc.Init() // webrtc source, WebRTC server
-
-	// 3. Main API
-
-	mp4.Init()   // MP4 API
-	hls.Init()   // HLS API
-	mjpeg.Init() // MJPEG API
-
-	// 4. Other sources and servers
-
-	hass.Init()       // hass source, Hass API server
-	onvif.Init()      // onvif source, ONVIF API server
-	webtorrent.Init() // webtorrent source, WebTorrent module
-	wyoming.Init()
-
-	//5. Other sources
-
-	rtmp.Init()     // rtmp source
-	exec.Init()     // exec source
-	ffmpeg.Init()   // ffmpeg source
-	echo.Init()     // echo source
-	ivideon.Init()  // ivideon source
-	http.Init()     // http/tcp source
-	dvrip.Init()    // dvrip source
-	tapo.Init()     // tapo source
-	isapi.Init()    // isapi source
-	mpegts.Init()   // mpegts passive source
-	roborock.Init() // roborock source
-	homekit.Init()  // homekit source
-	ring.Init()     // ring source
-	nest.Init()     // nest source
-	bubble.Init()   // bubble source
-	expr.Init()     // expr source
-	gopro.Init()    // gopro source
-	doorbird.Init() // doorbird source
-	//v4l2.Init()     // v4l2 source
-	//alsa.Init() // alsa source
-	flussonic.Init()
-	eseecloud.Init()
-	yandex.Init()
-
-	// 6. Helper modules
-
-	//ngrok.Init() // ngrok module
-	srtp.Init() // SRTP server
-	//debug.Init() // debug API
-
-	// 7. Go
-	//shell.RunUntilSignal()
+	rtsp.Init()  // rtsp manba (server tinglash AGENT konfigida o'chiq)
+	mp4.Init()   // MSE (ws)
+	mjpeg.Init() // MJPEG (ws)
 }
 
 func Handle(pattern string, handler http2.Handler) {
