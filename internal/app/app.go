@@ -23,7 +23,8 @@ const usage = `Usage of go2rtc:
 func Init() {
 	config := flagConfig{}
 	//config.Set("api.listen=0.0.0.0:1999")
-	config.Set("api.origin='*'")
+	// smartbozor: api.origin='*' yo'q — hamma javobga "Access-Control-Allow-Origin: *" qo'yilmasin (LAN dagi har
+	// qanday sayt AGENT javoblarini o'qiy olmasin); CORS ni AGENT o'zi faqat kerakli endpointlarga beradi
 	config.Set("rtsp.listen=''")
 	config.Set("webrtc.listen=''")
 	config.Set("srtp.listen=''")
