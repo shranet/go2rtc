@@ -39,3 +39,13 @@ func TestSmartBozorNoDynamicSources(t *testing.T) {
 		t.Fatal("mavjud oqim topilishi kerak")
 	}
 }
+
+func TestRedactURL(t *testing.T) {
+	if got := redactURL("rtsp://admin:S3cr%23t@192.168.1.4:554/Streaming/channels/101"); got !=
+		"rtsp://%2A%2A%2A@192.168.1.4:554/Streaming/channels/101" && got != "rtsp://***@192.168.1.4:554/Streaming/channels/101" {
+		t.Fatalf("redact: %s", got)
+	}
+	if got := redactURL("rtsp://192.168.1.4/x"); got != "rtsp://192.168.1.4/x" {
+		t.Fatalf("userinfo siz: %s", got)
+	}
+}

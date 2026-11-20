@@ -97,6 +97,10 @@ func listen(network, address string) {
 	server := http.Server{
 		Handler:           Handler,
 		ReadHeaderTimeout: 5 * time.Second, // Example: Set to 5 seconds
+		// smartbozor: bo'sh keep-alive ulanishlar abadiy qolib fayl deskriptorlarini tugatmasin (LAN dan DoS);
+		// /api/ws (hijack qilingan) va long-poll ga ta'sir qilmaydi
+		IdleTimeout:    60 * time.Second,
+		MaxHeaderBytes: 64 << 10,
 	}
 	if err = server.Serve(ln); err != nil {
 		log.Fatal().Err(err).Msg("[api] serve")

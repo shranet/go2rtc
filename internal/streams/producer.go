@@ -3,6 +3,7 @@ package streams
 import (
 	"encoding/json"
 	"errors"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -149,7 +150,7 @@ func (p *Producer) start() {
 		return
 	}
 
-	log.Debug().Msgf("[streams] start producer url=%s", p.url)
+	log.Debug().Msgf("[streams] start producer url=%s", redactURL(p.url))
 
 	p.state = stateStart
 	p.workerID++
@@ -167,7 +168,7 @@ func (p *Producer) worker(conn core.Producer, workerID int) {
 			return
 		}
 
-		log.Warn().Err(err).Str("url", p.url).Caller().Send()
+		log.Warn().Err(err).Str("url", redactURL(p.url)).Caller().Send()
 	}
 
 	p.reconnect(workerID, 0)
@@ -178,11 +179,11 @@ func (p *Producer) reconnect(workerID, retry int) {
 	defer p.mu.Unlock()
 
 	if p.workerID != workerID {
-		log.Trace().Msgf("[streams] stop reconnect url=%s", p.url)
+		log.Trace().Msgf("[streams] stop reconnect url=%s", redactURL(p.url))
 		return
 	}
 
-	log.Debug().Msgf("[streams] retry=%d to url=%s", retry, p.url)
+	log.Debug().Msgf("[streams] retry=%d to url=%s", retry, redactURL(p.url))
 
 	conn, err := GetProducer(p.url)
 	if err != nil {
@@ -257,7 +258,7 @@ func (p *Producer) stop() {
 		p.workerID++
 	}
 
-	log.Debug().Msgf("[streams] stop producer url=%s", p.url)
+	log.Debug().Msgf("[streams] stop producer url=%s", redactURL(p.url))
 
 	if p.conn != nil {
 		_ = p.conn.Stop()
@@ -267,4 +268,14 @@ func (p *Producer) stop() {
 	p.state = stateNone
 	p.receivers = nil
 	p.senders = nil
+}
+
+// redactURL — smartbozor: logga kamera login/paroli chiqmasin (rtsp://user:pass@ip -> rtsp://***@ip).
+func redactURL(s string) string {
+	u, err := url.Parse(s)
+	if err != nil || u.User == nil {
+		return s
+	}
+	u.User = url.User("***")
+	return u.String()
 }
